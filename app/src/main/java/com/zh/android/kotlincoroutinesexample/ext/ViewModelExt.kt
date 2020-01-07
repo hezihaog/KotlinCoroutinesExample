@@ -28,9 +28,9 @@ fun ViewModel.launch(
         onError(e)
     }) {
         try {
-            block.invoke(this)
+            block(this)
         } finally {
-            onComplete
+            onComplete()
         }
     }
 }
