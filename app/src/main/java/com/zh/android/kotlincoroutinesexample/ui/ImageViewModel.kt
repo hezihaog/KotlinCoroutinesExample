@@ -17,14 +17,14 @@ import kotlinx.coroutines.async
  */
 class ImageViewModel : ViewModel() {
     /**
-     * 图片列表
-     */
-    val imageData = MutableLiveData<List<ImageDataModel>>()
-
-    /**
      * 加载状态
      */
     val loadState = MutableLiveData<LoadState>()
+
+    /**
+     * 图片列表
+     */
+    val imageData = MutableLiveData<List<ImageDataModel>>()
 
     /**
      * 获取图片列表
@@ -32,8 +32,8 @@ class ImageViewModel : ViewModel() {
     fun getImageList() {
         launch({
             loadState.value = LoadState.Loading()
-            //加载5张图片
-            imageData.value = mutableListOf<Int>().generateInt(5).map {
+            //加载图片列表
+            imageData.value = mutableListOf<Int>().generateInt(15).map {
                 //async表示并发请求，调用await开始协程，如果想串行，则不加async，直接开始协程
                 async { NetworkManager.apiService.getImage() }
             }.map {
@@ -41,7 +41,7 @@ class ImageViewModel : ViewModel() {
             }
             loadState.value = LoadState.Success()
         }, { error ->
-            loadState.value = LoadState.Fail(error.message ?: "加载出现异常")
+            loadState.value = LoadState.Fail(error.message)
         })
     }
 }

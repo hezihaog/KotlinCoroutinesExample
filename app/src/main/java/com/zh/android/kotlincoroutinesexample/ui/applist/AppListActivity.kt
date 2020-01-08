@@ -1,9 +1,10 @@
-package com.zh.android.kotlincoroutinesexample
+package com.zh.android.kotlincoroutinesexample.ui.applist
 
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ProgressBar
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -12,15 +13,22 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
-import com.zh.android.kotlincoroutinesexample.model.ImageDataModel
-import com.zh.android.kotlincoroutinesexample.ui.ImageViewModel
-import com.zh.android.kotlincoroutinesexample.ui.applist.AppListActivity
-import com.zh.android.kotlincoroutinesexample.ui.item.ImageItemViewBinder
-import luyao.util.ktx.ext.startKtxActivity
+import com.zh.android.kotlincoroutinesexample.LoadState
+import com.zh.android.kotlincoroutinesexample.R
+import com.zh.android.kotlincoroutinesexample.model.AppModel
+import com.zh.android.kotlincoroutinesexample.ui.AppListViewModel
+import com.zh.android.kotlincoroutinesexample.ui.item.AppItemViewBinder
 import me.drakeet.multitype.Items
 import me.drakeet.multitype.MultiTypeAdapter
 
-class MainActivity : AppCompatActivity() {
+
+/**
+ * <b>Package:</b> com.zh.android.kotlincoroutinesexample.ui.applist <br>
+ * <b>Create Date:</b> 2020-01-08  11:05 <br>
+ * <b>@author:</b> zihe <br>
+ * <b>Description:</b>  <br>
+ */
+class AppListActivity : AppCompatActivity() {
     private val vRefreshLayout by lazy {
         findViewById<SmartRefreshLayout>(R.id.refresh_layout)
     }
@@ -37,17 +45,24 @@ class MainActivity : AppCompatActivity() {
 
     private val mListAdapter by lazy {
         MultiTypeAdapter(mListItem).apply {
-            register(ImageDataModel::class.java, ImageItemViewBinder())
+            register(AppModel::class.java, AppItemViewBinder())
         }
     }
 
     private val mViewModel by lazy {
-        ViewModelProviders.of(this).get(ImageViewModel::class.java)
+        ViewModelProviders.of(this).get(AppListViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.base_refresh_list)
+        val actionBar: ActionBar? = supportActionBar
+        actionBar?.run {
+            //显示返回键
+            setDisplayHomeAsUpEnabled(true)
+            //隐藏图标
+            setDisplayShowHomeEnabled(false)
+        }
         vRefreshLayout.apply {
             setEnableLoadMore(false)
             setOnRefreshListener {
@@ -55,11 +70,11 @@ class MainActivity : AppCompatActivity() {
             }
         }
         vRefreshList.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
+            layoutManager = LinearLayoutManager(this@AppListActivity)
             adapter = mListAdapter
             addItemDecoration(
                 DividerItemDecoration(
-                    this@MainActivity,
+                    this@AppListActivity,
                     DividerItemDecoration.VERTICAL
                 )
             )
@@ -78,7 +93,7 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
-        mViewModel.imageData.observe(this, Observer {
+        mViewModel.appListData.observe(this, Observer {
             mListItem.clear()
             mListItem.addAll(it)
             mListAdapter.notifyDataSetChanged()
@@ -88,18 +103,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun refresh() {
-        mViewModel.getImageList()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return true
+        mViewModel.getAppList(this.applicationContext, false)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_show_app_list -> {
-                startKtxActivity<AppListActivity>()
+            android.R.id.home -> {
+                finish()
                 true
             }
             else -> super.onOptionsItemSelected(item)

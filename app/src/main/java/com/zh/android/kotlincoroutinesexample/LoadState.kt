@@ -6,19 +6,19 @@ package com.zh.android.kotlincoroutinesexample
  * <b>@author:</b> zihe <br>
  * <b>Description:</b> 加载状态 <br>
  */
-sealed class LoadState(val msg: String) {
+sealed class LoadState(val msg: String? = "") {
     /**
      * 加载中
      */
-    class Loading(msg: String = "加载中") : LoadState(msg)
+    class Loading(msg: String? = "加载中") : LoadState(msg)
 
     /**
      * 加载成功
      */
-    class Success(msg: String = "加载成功") : LoadState(msg)
+    class Success(msg: String? = "加载成功") : LoadState(msg)
 
     /**
      * 加载失败
      */
-    class Fail(msg: String = "加载失败") : LoadState(msg)
+    class Fail(msg: String? = "加载失败") : LoadState(msg)
 }
