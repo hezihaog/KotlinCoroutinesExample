@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zh.android.kotlincoroutinesexample.R
 import com.zh.android.kotlincoroutinesexample.model.ImageDataModel
+import luyao.util.ktx.ext.clickN
 import me.drakeet.multitype.ItemViewBinder
 
 /**
@@ -16,7 +17,9 @@ import me.drakeet.multitype.ItemViewBinder
  * <b>@author:</b> zihe <br>
  * <b>Description:</b> 图片条目 <br>
  */
-class ImageItemViewBinder : ItemViewBinder<ImageDataModel, ImageItemViewBinder.ViewHolder>() {
+class ImageItemViewBinder(
+    private val clickBlock: (position: Int, itemModel: ImageDataModel) -> Unit
+) : ItemViewBinder<ImageDataModel, ImageItemViewBinder.ViewHolder>() {
     override fun onCreateViewHolder(inflater: LayoutInflater, parent: ViewGroup): ViewHolder {
         return ViewHolder(inflater.inflate(R.layout.item_image, parent, false))
     }
@@ -24,6 +27,9 @@ class ImageItemViewBinder : ItemViewBinder<ImageDataModel, ImageItemViewBinder.V
     override fun onBindViewHolder(holder: ViewHolder, itemModel: ImageDataModel) {
         itemModel.run {
             Glide.with(holder.itemView).load(imgUrl).into(holder.image)
+            holder.image.clickN {
+                clickBlock(holder.adapterPosition, itemModel)
+            }
         }
     }
 

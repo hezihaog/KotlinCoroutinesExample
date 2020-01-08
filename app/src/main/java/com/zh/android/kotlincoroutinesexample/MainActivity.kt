@@ -1,9 +1,12 @@
 package com.zh.android.kotlincoroutinesexample
 
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -11,14 +14,19 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
+import com.wanglu.photoviewerlibrary.OnLongClickListener
+import com.wanglu.photoviewerlibrary.PhotoViewer
 import com.zh.android.kotlincoroutinesexample.model.ImageDataModel
 import com.zh.android.kotlincoroutinesexample.ui.ImageViewModel
 import com.zh.android.kotlincoroutinesexample.ui.applist.AppListActivity
 import com.zh.android.kotlincoroutinesexample.ui.item.ImageItemViewBinder
 import luyao.util.ktx.ext.startKtxActivity
+import luyao.util.ktx.ext.toast
 import me.drakeet.multitype.Items
 import me.drakeet.multitype.MultiTypeAdapter
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val vRefreshLayout by lazy {
@@ -37,7 +45,48 @@ class MainActivity : AppCompatActivity() {
 
     private val mListAdapter by lazy {
         MultiTypeAdapter(mListItem).apply {
-            register(ImageDataModel::class.java, ImageItemViewBinder())
+            register(ImageDataModel::class.java, ImageItemViewBinder { position, itemModel ->
+                PhotoViewer.setData(arrayListOf<String>().apply {
+                    addAll(
+                        mListItem.filterIsInstance<ImageDataModel>().map {
+                            it.imgUrl
+                        }
+                    )
+                })
+                    .setImgContainer(vRefreshList)
+                    .setCurrentPage(position)
+                    .setShowImageViewInterface(object : PhotoViewer.ShowImageViewInterface {
+                        override fun show(iv: ImageView, url: String) {
+                            Glide.with(iv.context).load(url).into(iv)
+                        }
+                    })
+                    .setOnLongClickListener(object : OnLongClickListener {
+                        override fun onLongClick(view: View) {
+                            AlertDialog.Builder(view.context)
+                                .setItems(
+                                    mutableListOf<CharSequence>(
+                                        "保存到相册"
+                                    ).toTypedArray()
+                                ) { _, which ->
+                                    when (which) {
+                                        0 -> {
+                                            val context = this@MainActivity.applicationContext
+                                            val url = itemModel.imgUrl
+                                            mViewModel.downloadFile(
+                                                context,
+                                                url,
+                                                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!.absolutePath,
+                                                UUID.randomUUID().toString().replace("-", "")
+                                            )
+                                        }
+                                    }
+                                }
+                                .create()
+                                .show()
+                        }
+                    })
+                    .start(this@MainActivity)
+            })
         }
     }
 
@@ -83,6 +132,13 @@ class MainActivity : AppCompatActivity() {
             mListItem.addAll(it)
             mListAdapter.notifyDataSetChanged()
             vRefreshLayout.finishRefresh()
+        })
+        mViewModel.downloadImageState.observe(this, Observer {
+            when (it) {
+                is DownloadState.Success -> {
+                    toast("保存成功")
+                }
+            }
         })
         refresh()
     }
