@@ -56,9 +56,8 @@ dependencies {
 
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'
     implementation 'me.drakeet.multitype:multitype:3.5.0'
-    implementation 'com.github.bumptech.glide:glide:4.10.0'
-
-    implementation 'luyao.util.ktx:AndroidUtilKTX:0.0.7-alpha02'
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
 
     implementation 'com.github.wanglu1209:PhotoViewer:0.50'
+    implementation 'com.blankj:utilcodex:1.26.0'
 }

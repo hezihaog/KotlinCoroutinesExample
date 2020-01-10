@@ -3,8 +3,8 @@ package com.zh.android.kotlincoroutinesexample.ui.applist
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
-import android.widget.ProgressBar
 import androidx.appcompat.app.ActionBar
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
@@ -18,6 +18,7 @@ import com.zh.android.kotlincoroutinesexample.R
 import com.zh.android.kotlincoroutinesexample.model.AppModel
 import com.zh.android.kotlincoroutinesexample.ui.AppListViewModel
 import com.zh.android.kotlincoroutinesexample.ui.item.AppItemViewBinder
+import com.zh.android.kotlincoroutinesexample.util.AppUtil
 import me.drakeet.multitype.Items
 import me.drakeet.multitype.MultiTypeAdapter
 
@@ -45,7 +46,25 @@ class AppListActivity : AppCompatActivity() {
 
     private val mListAdapter by lazy {
         MultiTypeAdapter(mListItem).apply {
-            register(AppModel::class.java, AppItemViewBinder())
+            register(
+                AppModel::class.java,
+                AppItemViewBinder { _, itemModel, _ ->
+                    AlertDialog.Builder(this@AppListActivity)
+                        .setItems(mutableListOf("分享", "卸载").toTypedArray()) { _, which ->
+                            when (which) {
+                                0 -> {
+                                    AppUtil.shareApp(this@AppListActivity, itemModel.sourceDir)
+                                }
+                                1 -> {
+                                    AppUtil.uninstallApp(
+                                        this@AppListActivity,
+                                        itemModel.packageName
+                                    )
+                                }
+                            }
+                        }
+                        .show()
+                })
         }
     }
 
@@ -99,6 +118,10 @@ class AppListActivity : AppCompatActivity() {
             mListAdapter.notifyDataSetChanged()
             vRefreshLayout.finishRefresh()
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
         refresh()
     }
 

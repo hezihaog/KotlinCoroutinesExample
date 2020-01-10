@@ -1,6 +1,5 @@
 package com.zh.android.kotlincoroutinesexample.model
 
-import android.content.pm.PackageInfo
 import android.graphics.drawable.Drawable
 import java.io.Serializable
 
@@ -24,9 +23,13 @@ class AppModel(
      */
     val icon: Drawable,
     /**
-     * App包信息
+     * App安装包路径
      */
-    val packageInfo: PackageInfo
+    val sourceDir: String,
+    /**
+     * App的Apk文件大小
+     */
+    val apkSize: String
 ) : Serializable {
     companion object {
         private const val serialVersionUID = 1L;

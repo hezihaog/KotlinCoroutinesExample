@@ -7,8 +7,8 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.zh.android.kotlincoroutinesexample.R
+import com.zh.android.kotlincoroutinesexample.ext.click
 import com.zh.android.kotlincoroutinesexample.model.ImageDataModel
-import luyao.util.ktx.ext.clickN
 import me.drakeet.multitype.ItemViewBinder
 
 /**
@@ -27,7 +27,7 @@ class ImageItemViewBinder(
     override fun onBindViewHolder(holder: ViewHolder, itemModel: ImageDataModel) {
         itemModel.run {
             Glide.with(holder.itemView).load(imgUrl).into(holder.image)
-            holder.image.clickN {
+            holder.image.click {
                 clickBlock(holder.adapterPosition, itemModel)
             }
         }

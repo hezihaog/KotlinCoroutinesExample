@@ -1,11 +1,16 @@
 package com.zh.android.kotlincoroutinesexample.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,5 +119,29 @@ public class AppUtil {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * 卸载App
+     *
+     * @param packageName 要卸载的App包名
+     */
+    public static void uninstallApp(Activity activity, String packageName) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_DELETE);
+        intent.setData(Uri.parse("package:" + packageName));
+        activity.startActivityForResult(intent, 1);
+    }
+
+    /**
+     * 分享App
+     */
+    public static void shareApp(Context context, String apkPath) {
+        File file = new File(apkPath);
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_SEND);
+        intent.setType("*/*");
+        intent.putExtra(Intent.EXTRA_STREAM, FileProvider7.getUriForFile(context, file));
+        context.startActivity(intent);
     }
 }

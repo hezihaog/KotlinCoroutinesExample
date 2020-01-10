@@ -1,5 +1,6 @@
 package com.zh.android.kotlincoroutinesexample
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Environment
 import android.view.Menu
@@ -18,12 +19,11 @@ import com.bumptech.glide.Glide
 import com.scwang.smartrefresh.layout.SmartRefreshLayout
 import com.wanglu.photoviewerlibrary.OnLongClickListener
 import com.wanglu.photoviewerlibrary.PhotoViewer
+import com.zh.android.kotlincoroutinesexample.ext.toast
 import com.zh.android.kotlincoroutinesexample.model.ImageDataModel
 import com.zh.android.kotlincoroutinesexample.ui.ImageViewModel
 import com.zh.android.kotlincoroutinesexample.ui.applist.AppListActivity
 import com.zh.android.kotlincoroutinesexample.ui.item.ImageItemViewBinder
-import luyao.util.ktx.ext.startKtxActivity
-import luyao.util.ktx.ext.toast
 import me.drakeet.multitype.Items
 import me.drakeet.multitype.MultiTypeAdapter
 import java.util.*
@@ -155,7 +155,7 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_show_app_list -> {
-                startKtxActivity<AppListActivity>()
+                startActivity(Intent(this, AppListActivity::class.java))
                 true
             }
             else -> super.onOptionsItemSelected(item)
