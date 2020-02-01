@@ -144,4 +144,19 @@ public class AppUtil {
         intent.putExtra(Intent.EXTRA_STREAM, FileProvider7.getUriForFile(context, file));
         context.startActivity(intent);
     }
+
+    /**
+     * 判断指定包名是否有LaunchIntent
+     */
+    public static boolean hasLaunchIntentForPackage(Context context, String packageName) {
+        return context.getPackageManager().getLaunchIntentForPackage(packageName) != null;
+    }
+
+    /**
+     * 打开指定包名的App
+     */
+    public static void goApp(Activity activity, String packageName) {
+        Intent shortcutIntent = activity.getPackageManager().getLaunchIntentForPackage(packageName);
+        activity.startActivity(shortcutIntent);
+    }
 }

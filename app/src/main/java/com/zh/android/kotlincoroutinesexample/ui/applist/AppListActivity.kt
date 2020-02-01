@@ -49,21 +49,47 @@ class AppListActivity : AppCompatActivity() {
             register(
                 AppModel::class.java,
                 AppItemViewBinder { _, itemModel, _ ->
-                    AlertDialog.Builder(this@AppListActivity)
-                        .setItems(mutableListOf("分享", "卸载").toTypedArray()) { _, which ->
-                            when (which) {
-                                0 -> {
-                                    AppUtil.shareApp(this@AppListActivity, itemModel.sourceDir)
-                                }
-                                1 -> {
-                                    AppUtil.uninstallApp(
-                                        this@AppListActivity,
-                                        itemModel.packageName
-                                    )
+                    //判断是否可以打开
+                    if (AppUtil.hasLaunchIntentForPackage(
+                            this@AppListActivity,
+                            itemModel.packageName
+                        )
+                    ) {
+                        AlertDialog.Builder(this@AppListActivity)
+                            .setItems(mutableListOf("打开", "分享", "卸载").toTypedArray()) { _, which ->
+                                when (which) {
+                                    0 -> {
+                                        AppUtil.goApp(this@AppListActivity, itemModel.packageName)
+                                    }
+                                    1 -> {
+                                        AppUtil.shareApp(this@AppListActivity, itemModel.sourceDir)
+                                    }
+                                    2 -> {
+                                        AppUtil.uninstallApp(
+                                            this@AppListActivity,
+                                            itemModel.packageName
+                                        )
+                                    }
                                 }
                             }
-                        }
-                        .show()
+                            .show()
+                    } else {
+                        AlertDialog.Builder(this@AppListActivity)
+                            .setItems(mutableListOf("分享", "卸载").toTypedArray()) { _, which ->
+                                when (which) {
+                                    0 -> {
+                                        AppUtil.shareApp(this@AppListActivity, itemModel.sourceDir)
+                                    }
+                                    1 -> {
+                                        AppUtil.uninstallApp(
+                                            this@AppListActivity,
+                                            itemModel.packageName
+                                        )
+                                    }
+                                }
+                            }
+                            .show()
+                    }
                 })
         }
     }
@@ -126,7 +152,7 @@ class AppListActivity : AppCompatActivity() {
     }
 
     private fun refresh() {
-        mViewModel.getAppList(this.applicationContext, false)
+        mViewModel.getAppList(this.applicationContext, true)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
